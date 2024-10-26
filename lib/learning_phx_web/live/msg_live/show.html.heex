@@ -1,0 +1,27 @@
+<.header>
+  Msg <%= @msg.id %>
+  <:subtitle>This is a msg record from your database.</:subtitle>
+  <:actions>
+    <.link patch={~p"/msgs/#{@msg}/show/edit"} phx-click={JS.push_focus()}>
+      <.button>Edit msg</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.list>
+  <:item title="Content"><%= @msg.content %></:item>
+  <:item title="Sender"><%= @msg.sender %></:item>
+</.list>
+
+<.back navigate={~p"/msgs"}>Back to msgs</.back>
+
+<.modal :if={@live_action == :edit} id="msg-modal" show on_cancel={JS.patch(~p"/msgs/#{@msg}")}>
+  <.live_component
+    module={LearningPhxWeb.MsgLive.FormComponent}
+    id={@msg.id}
+    title={@page_title}
+    action={@live_action}
+    msg={@msg}
+    patch={~p"/msgs/#{@msg}"}
+  />
+</.modal>

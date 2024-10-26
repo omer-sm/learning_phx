@@ -1,0 +1,42 @@
+<.header>
+  Listing Msgs
+  <:actions>
+    <.link patch={~p"/msgs/new"}>
+      <.button>New Msg</.button>
+    </.link>
+  </:actions>
+</.header>
+
+<.table
+  id="msgs"
+  rows={@streams.msgs}
+  row_click={fn {_id, msg} -> JS.navigate(~p"/msgs/#{msg}") end}
+>
+  <:col :let={{_id, msg}} label="Content"><%= msg.content %></:col>
+  <:col :let={{_id, msg}} label="Sender"><%= msg.sender %></:col>
+  <:action :let={{_id, msg}}>
+    <div class="sr-only">
+      <.link navigate={~p"/msgs/#{msg}"}>Show</.link>
+    </div>
+    <.link patch={~p"/msgs/#{msg}/edit"}>Edit</.link>
+  </:action>
+  <:action :let={{id, msg}}>
+    <.link
+      phx-click={JS.push("delete", value: %{id: msg.id}) |> hide("##{id}")}
+      data-confirm="Are you sure?"
+    >
+      Delete
+    </.link>
+  </:action>
+</.table>
+
+<.modal :if={@live_action in [:new, :edit]} id="msg-modal" show on_cancel={JS.patch(~p"/msgs")}>
+  <.live_component
+    module={LearningPhxWeb.MsgLive.FormComponent}
+    id={@msg.id || :new}
+    title={@page_title}
+    action={@live_action}
+    msg={@msg}
+    patch={~p"/msgs"}
+  />
+</.modal>
